@@ -15,26 +15,57 @@
 
 require 'io/console'
 
+@students = []
+
+def print_menu
+  puts "1. Input the students"
+  puts "2. Show the students"
+  puts "9. Exit"
+end 
+
+def show_students
+  print_header
+  print_students_list
+  print_footer 
+end
+
+def process selection 
+  case selection 
+    when "1" then input_students
+    when "2" then show_students 
+    when "9" then exit
+    else 
+      puts "Invalid selection"
+  end 
+end
+
+def interactive_menu
+  loop do
+     print_menu
+     process(gets.chomp) 
+  end 
+end
+
 def print_header
   puts "The students of Villains Academy".center(IO.console.winsize[1])
   puts "------------".center(IO.console.winsize[1])
 end
 
-def print_students names 
-  names.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' and student[:name].length < 12}
+def print_students_list
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) }
 end 
 
-def print_students_if_first_letter_W names 
-  names.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' }
+def print_students_if_first_letter_W  
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' }
 end 
 
-def print_students_if_name_length_less_than_12 names 
-  names.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < 12 }
+def print_students_if_name_length_less_than_12  
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < 12 }
 end
 
-def print_students_by_cohorts names 
+def print_students_by_cohorts  
   sorted_hash = {}
-  names.each do |student|
+  @students.each do |student|
     cohort = student[:cohort]
     sorted_hash[cohort] = [] if sorted_hash[cohort].nil?
     sorted_hash[cohort] << student[:name] 
@@ -42,9 +73,9 @@ def print_students_by_cohorts names
   puts sorted_hash.to_s.center(IO.console.winsize[1]) if !sorted_hash.empty?
 end
 
-def print_footer names
-  if !names.empty?
-    puts "Overall, we have #{names.count} great #{names.count == 1 ? 'student': 'students'}".center(IO.console.winsize[1])
+def print_footer 
+  if !@students.empty?
+    puts "Overall, we have #{@students.count} great #{@students.count == 1 ? 'student': 'students'}".center(IO.console.winsize[1])
   else 
     puts "There are currently no students at Villains Academy".center(IO.console.winsize[1])
   end
@@ -63,7 +94,6 @@ end
 
 def input_students
   months_array = ["January","February","March","April","May","June","July","August","September","October","November","December",'']
-  students = []
   loop do 
     puts "Please enter the name of the student you wish to enter into the database"
     puts "If you do not wish to enter another student, please hit return twice"
@@ -81,17 +111,13 @@ def input_students
     puts "Please enter the students height in metres"
     height = gets.chomp.to_f
     hobbies = add_hobbies
-    students << {name: name, cohort: cohort, height: height, hobbies: hobbies}
-    puts "Now we have #{students.count} #{students.count == 1 ? 'student': 'students'}"
+    @students << {name: name, cohort: cohort, height: height, hobbies: hobbies}
+    puts "Now we have #{@students.count} #{@students.count == 1 ? 'student': 'students'}"
   end
-  students 
 end   
 
 # nothing happens until we call the methods
-students = input_students
-print_header
-print_students_by_cohorts students
-print_footer students
+interactive_menu
 
 # Question 1:
 
