@@ -6,6 +6,7 @@ def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
   puts "3. Save the list to students.csv"
+  puts "4. Load the list from students.csv"
   puts "9. Exit"
 end 
 
@@ -20,6 +21,7 @@ def process selection
     when "1" then input_students
     when "2" then show_students 
     when "3" then save_students
+    when "4" then load_students
     when "9" then exit
     else 
       puts "Invalid selection"
@@ -39,7 +41,7 @@ def print_header
 end
 
 def print_students_list
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) }
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height] != 0.0 ? "#{student[:height]}m" : "No height data"}) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) }
 end 
 
 def print_students_if_first_letter_W  
@@ -70,7 +72,9 @@ end
 
 def add_hobbies 
   hobbies = []
-  puts "What are the students hobbies? Press enter twice if you wish to stop adding hobbies"
+  puts "What are the students hobbies?"
+  puts "Please enter 'None' if the student has no hobbies"
+  puts "Press enter twice if you wish to stop adding hobbies"
   hobby = gets.chomp
   while !hobby.empty? 
     hobbies << hobby 
@@ -108,9 +112,22 @@ def save_students
   file = File.open("students.csv", "w")
   # iterate over the array of students
   @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(', ')
+    student_data = [student[:name], student[:cohort], student[:height], student[:hobbies]]
+    csv_line = student_data.join(',')
     file.puts csv_line
+  end 
+  file.close 
+end 
+
+def load_students
+  file = File.open("students.csv", "r")
+  file.readlines.each do |line|
+    data_array = line.chomp.split(',') # splits the csv lines into an array
+    name = data_array[0] # data at index 0 will always be the name
+    cohort = data_array[1] # data at index 1 will always be an inputted cohort or default value of 'November'
+    height = data_array[2] # data at index 2 will always be either an inputted height or 0.0
+    hobbies = data_array[3..-1] # data from index 3 to last index will be the hobbies, the hobbies variable will always be an array, even if there is only 1 hobby or 'None' inputted
+    @students << {name: name, cohort: cohort.to_sym, height: height.to_i, hobbies: hobbies}
   end 
   file.close 
 end 
