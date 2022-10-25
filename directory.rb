@@ -413,3 +413,13 @@ interactive_menu
 # Write a short program that reads its own source code 
 # (search Stack Overflow to find out how to get the name of the currently 
 # executed file) and prints it on the screen.
+
+# A file that prints its own source code and that is its only functionality
+# is called a 'Quine', so the answer to this question can be found in
+# quine.rb
+
+
+
+
+
+
