@@ -1,1 +1,3 @@
 students.csv
+
+# any files listed within this file will not be tracked by git
