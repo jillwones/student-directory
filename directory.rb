@@ -150,8 +150,7 @@ def save_students(filename = "students.csv")
 end 
 
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
-  file.readlines.each do |line|
+  File.open(filename, "r").readlines.each do |line|
     data_array = line.chomp.split(',') # splits the csv lines into an array
     name = data_array[0] # data at index 0 will always be the name
     cohort = data_array[1] # data at index 1 will always be an inputted cohort or default value of 'November'
@@ -159,8 +158,7 @@ def load_students(filename = "students.csv")
     hobbies = data_array[3..-1] # data from index 3 to last index will be the hobbies, the hobbies variable will always be an array, even if there is only 1 hobby or 'None' inputted
     add_student_data_to_students_array(name, cohort, height, hobbies)
   end 
-  file.close 
-end 
+end
 
 # try_load_students allows us to load data from students.csv by passing it as an
 # argument when running this file, if no argument is given then no previous data is
@@ -385,3 +383,33 @@ interactive_menu
 # File class to find out how to use a code block (do...end) to access a file, so 
 # that we didn't have to close it explicitly (it will be closed automatically when 
 # the block finishes). Refactor the code to use a code block.
+
+# altered the load_students method to behave this way
+
+# Question 7:
+
+# We are de-facto using CSV format to store data. However, Ruby includes a 
+# library to work with the CSV files that we could use instead of working directly 
+# with the files. Refactor the code to use this library.
+
+# I would change the load method to start with the following:
+
+# CSV.open(filename, "r").readlines.each do |line|
+
+# and the save method to the following :
+
+# CSV.open(filename, "w") do |csv|
+#   @students.each do |student|
+#     student_data = [student[:name], student[:cohort], student[:height], student[:hobbies]]
+#     csv_line = student_data.join(',')
+#     csv.puts csv_line
+#   end 
+# end
+
+# add "require 'csv'" to this file to use the CSV library 
+
+# Question 8:
+
+# Write a short program that reads its own source code 
+# (search Stack Overflow to find out how to get the name of the currently 
+# executed file) and prints it on the screen.
