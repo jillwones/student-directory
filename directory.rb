@@ -417,9 +417,3 @@ interactive_menu
 # A file that prints its own source code and that is its only functionality
 # is called a 'Quine', so the answer to this question can be found in
 # quine.rb
-
-
-
-
-
-
