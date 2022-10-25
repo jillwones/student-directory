@@ -24,10 +24,30 @@ end
 
 def process selection 
   case selection 
-    when "1" then input_students
+    when "1" then input_students; puts "Data added!".center(IO.console.winsize[1])
     when "2" then show_students 
-    when "3" then save_students
-    when "4" then load_students
+    when "3" 
+      loop do 
+        puts "What file would you like to save the data in? students.csv is recommended"
+        filename = STDIN.gets.chomp
+        if File.exist?(filename)
+          save_students(filename); puts "Data saved!".center(IO.console.winsize[1])
+          break 
+        else 
+          puts "File doesn't exist"
+        end
+      end
+    when "4" 
+      loop do 
+        puts "What file do you wish to load student data from? students.csv is recommended"
+        filename = STDIN.gets.chomp 
+        if File.exist?(filename)
+          load_students(filename); puts "Data loaded!".center(IO.console.winsize[1])
+          break 
+        else 
+          puts "File doesn't exist"
+        end 
+      end
     when "9" then exit
     else 
       puts "Invalid selection"
@@ -117,9 +137,9 @@ end
 
 # -------------------- CODE RELATING TO SAVING AND LOADING DATA ---------------------
 
-def save_students
+def save_students(filename = "students.csv")
   # open the folder for writing
-  file = File.open("students.csv", "w")
+  file = File.open(filename, "w")
   # iterate over the array of students
   @students.each do |student|
     student_data = [student[:name], student[:cohort], student[:height], student[:hobbies]]
@@ -143,7 +163,8 @@ def load_students(filename = "students.csv")
 end 
 
 # try_load_students allows us to load data from students.csv by passing it as an
-# argument when running this file
+# argument when running this file, if no argument is given then no previous data is
+# loaded
 
 def try_load_students
   filename = ARGV.first # first argument from the command line
@@ -344,3 +365,23 @@ interactive_menu
 # them knowing if the action was successful. Can you fix this and implement feedback
 # messages for the user?
 
+# In the process method I added "Data added!", "Data saved!" and "Data loaded!" 
+# that will show in the terminal after students have been inputted, the inputted
+# data has been saved and when saved data (csv file) is loaded
+
+# Question 5:
+
+# The filename we use to save and load data (menu items 3 and 4) is hardcoded. 
+# Make the script more flexible by asking for the filename if the user chooses 
+# these menu items.
+
+# Added simple loop do end loops to the process method for the saving and loading 
+# options, now the user is asked for a filename, students.csv is recommended, if the 
+# user types in a file that does not exist they are told this and prompted again
+
+# Question 6:
+
+# We are opening and closing the files manually. Read the documentation of the 
+# File class to find out how to use a code block (do...end) to access a file, so 
+# that we didn't have to close it explicitly (it will be closed automatically when 
+# the block finishes). Refactor the code to use a code block.
