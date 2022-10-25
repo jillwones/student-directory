@@ -1,3 +1,5 @@
+# --------------------------- INTERACTIVE MENU SECTION --------------------------
+
 require 'io/console'
 
 @students = []
@@ -10,10 +12,11 @@ def print_menu
   puts "9. Exit"
 end 
 
-def show_students
-  print_header
-  print_students_list
-  print_footer 
+def interactive_menu
+  loop do
+     print_menu
+     process(STDIN.gets.chomp) 
+  end 
 end
 
 def process selection 
@@ -28,12 +31,7 @@ def process selection
   end 
 end
 
-def interactive_menu
-  loop do
-     print_menu
-     process(STDIN.gets.chomp) 
-  end 
-end
+# -------------------------- SHOW STUDENTS SECTION ------------------------------
 
 def print_header
   puts "The students of Villains Academy".center(IO.console.winsize[1])
@@ -44,30 +42,49 @@ def print_students_list
   @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height] != 0.0 ? "#{student[:height]}m" : "No height data"}) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) }
 end 
 
-def print_students_if_first_letter_W  
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' }
-end 
-
-def print_students_if_name_length_less_than_12  
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < 12 }
-end
-
-def print_students_by_cohorts  
-  sorted_hash = {}
-  @students.each do |student|
-    cohort = student[:cohort]
-    sorted_hash[cohort] = [] if sorted_hash[cohort].nil?
-    sorted_hash[cohort] << student[:name] 
-  end 
-  puts sorted_hash.to_s.center(IO.console.winsize[1]) if !sorted_hash.empty?
-end
-
 def print_footer 
   if !@students.empty?
     puts "Overall, we have #{@students.count} great #{@students.count == 1 ? 'student': 'students'}".center(IO.console.winsize[1])
   else 
     puts "There are currently no students at Villains Academy".center(IO.console.winsize[1])
   end
+end 
+
+def show_students
+  print_header
+  print_students_list
+  print_footer 
+end
+
+# ----------------------------- INPUTTING STUDENT DATA -------------------------------
+
+def add_student_data_to_students_array name, cohort, height, hobbies
+  @students << {name: name, cohort: cohort.to_sym, height: height.to_f, hobbies: hobbies}
+end
+
+def add_name 
+  puts "Please enter the name of the student you wish to enter into the database"
+  puts "If you do not wish to enter another student, please hit return twice"
+  name = STDIN.gets.chomp
+end
+
+def add_cohort
+  months_array = ["January","February","March","April","May","June","July","August","September","October","November","December",'']
+  puts "Please enter the students cohort (Example: November or December)"
+  while cohort = STDIN.gets.chomp
+    if !months_array.include? cohort 
+      puts "That is not a valid month"
+    else
+      cohort = 'November' if cohort.empty?
+      break
+    end
+  end
+  cohort
+end
+
+def add_height 
+  puts "Please enter the students height in metres"
+  height = STDIN.gets.chomp
 end 
 
 def add_hobbies 
@@ -84,28 +101,18 @@ def add_hobbies
 end 
 
 def input_students
-  months_array = ["January","February","March","April","May","June","July","August","September","October","November","December",'']
   loop do 
-    puts "Please enter the name of the student you wish to enter into the database"
-    puts "If you do not wish to enter another student, please hit return twice"
-    name = STDIN.gets.chomp 
+    name = add_name
     break if name.empty?
-    puts "Please enter the students cohort (Example: November or December)"
-      while cohort = STDIN.gets.chomp
-        if !months_array.include? cohort 
-          puts "That is not a valid month"
-        else
-          cohort = 'November' if cohort.empty?
-          break
-        end
-      end
-    puts "Please enter the students height in metres"
-    height = STDIN.gets.chomp.to_f
+    cohort = add_cohort
+    height = add_height 
     hobbies = add_hobbies
-    @students << {name: name, cohort: cohort, height: height, hobbies: hobbies}
+    add_student_data_to_students_array(name, cohort, height, hobbies)
     puts "Now we have #{@students.count} #{@students.count == 1 ? 'student': 'students'}"
   end
-end   
+end 
+
+# -------------------- CODE RELATING TO SAVING AND LOADING DATA ---------------------
 
 def save_students
   # open the folder for writing
@@ -127,7 +134,7 @@ def load_students(filename = "students.csv")
     cohort = data_array[1] # data at index 1 will always be an inputted cohort or default value of 'November'
     height = data_array[2] # data at index 2 will always be either an inputted height or 0.0
     hobbies = data_array[3..-1] # data from index 3 to last index will be the hobbies, the hobbies variable will always be an array, even if there is only 1 hobby or 'None' inputted
-    @students << {name: name, cohort: cohort.to_sym, height: height.to_i, hobbies: hobbies}
+    add_student_data_to_students_array(name, cohort, height, hobbies)
   end 
   file.close 
 end 
@@ -137,15 +144,39 @@ def try_load_students
   return if filename.nil? # get out of the method if it isn't given
   if File.exist?(filename) # if it exists
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
+    puts "Loaded #{@students.count} students from #{filename}"
   else 
     puts "Sorry, #{filename} doesn't exist."
     exit 
   end 
 end 
 
+# --------------------- METHODS MADE ANSWERING STEP 8 QUESTIONS ---------------------
+
+def print_students_if_first_letter_W  
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' }
+end 
+
+def print_students_if_name_length_less_than_12  
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < 12 }
+end
+
+def print_students_by_cohorts  
+  sorted_hash = {}
+  @students.each do |student|
+    cohort = student[:cohort]
+    sorted_hash[cohort] = [] if sorted_hash[cohort].nil?
+    sorted_hash[cohort] << student[:name] 
+  end 
+  puts sorted_hash.to_s.center(IO.console.winsize[1]) if !sorted_hash.empty?
+end
+
+# ----------- END OF CODE - BELOW WE CALL THE METHODS TO RUN THE PROGRAM -------------
+
 try_load_students
 interactive_menu
+
+# ----------------------------- QUESTIONS AND ANSWERS -----------------------------
 
 # STEP 8 QUESTIONS:
 
@@ -262,3 +293,48 @@ interactive_menu
 # list if there is at least one student in there?
 
 # Added an if statement to the print_footer method
+
+# STEP 14 QUESTIONS:
+
+# Question 1:
+
+# After we added the code to load the students from file, we ended up with adding 
+# the students to @students in two places. The lines in load_students() and 
+# input_students() are almost the same. This violates the DRY (Don't Repeat Yourself) 
+# principle. How can you extract them into a method to fix this problem?
+
+# Made the add_student_data_to_students_array method and pass in the name, cohort
+# height and hobbies are arguments
+
+# Question 2:
+
+# How could you make the program load students.csv by default if no file 
+# is given on startup? Which methods would you need to change?
+
+# Would change the try_load_students method to:
+
+# def try_load_students
+#   filename = 'students.csv' # hard code the students.csv filename
+#   if File.exist?(filename) # if it exists, load it
+#     load_students(filename)
+#     puts "Loaded #{@students.count} students from #{filename}"
+#   else 
+#     puts "Sorry, #{filename} doesn't exist."
+#     exit 
+#   end 
+# end 
+
+# Question 3:
+
+# Continue refactoring the code. Which method is a bit too long? 
+# What method names are not clear enough? Anything else you'd change to make your 
+# code look more elegant? Why?
+
+# Input students method is over 20 lines long so lets break that into seperate methods
+
+# Question 4:
+
+# Right now, when the user choses an option from our menu, there's no way of 
+# them knowing if the action was successful. Can you fix this and implement feedback
+# messages for the user?
+
