@@ -7,12 +7,21 @@ require 'io/console'
 
 @students = []
 
+class String
+  def red; "\e[31m#{self}\e[0m"; end
+  def green; "\e[32m#{self}\e[0m"; end
+  def yellow; "\e[33m#{self}\e[0m"; end
+  def cyan; "\e[36m#{self}\e[0m"; end
+  def magenta; "\e[35m#{self}\e[0m"; end
+end
+
+
 def print_menu
-  puts "1. Input the students"
-  puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
-  puts "9. Exit"
+  puts "1. Input the students".green
+  puts "2. Show the students".yellow
+  puts "3. Save the list to students.csv".cyan
+  puts "4. Load the list from students.csv".magenta
+  puts "9. Exit".red
 end 
 
 def interactive_menu
