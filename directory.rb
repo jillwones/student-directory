@@ -65,6 +65,8 @@ def process selection
   end 
 end
 
+# ------ SEARCH MENU FOR FILTERING LIST OF STUDENTS BASED ON CERTAIN PARAMETERS ------
+
 def search_students_menu 
   loop do 
     search_students
@@ -76,14 +78,16 @@ def search_students
   puts "Filter by:".green
   puts "1. First letter".yellow
   puts "2. Maximum name length".cyan
-  puts "3. Back to Main Menu".magenta
+  puts "3. Cohort".green
+  puts "4. Back to Main Menu".magenta
 end
 
 def search_students_output(choice)
   case choice 
   when "1" then search_by_first_letter
   when "2" then search_by_name_length
-  when "3" then interactive_menu
+  when "3" then search_by_cohort
+  when "4" then interactive_menu
   else 
     puts "Invalid input"
   end 
@@ -225,17 +229,23 @@ end
 def search_by_name_length  
   puts "What is the maximum length of the name you wish to search for?"
   length = STDIN.gets.chomp.to_i
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < length }
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length <= length }
 end
 
-def print_students_by_cohorts  
+def search_by_cohort  
+  puts "What cohort do you wish to display?"
+  desired_cohort = STDIN.gets.chomp
   sorted_hash = {}
   @students.each do |student|
     cohort = student[:cohort]
     sorted_hash[cohort] = [] if sorted_hash[cohort].nil?
     sorted_hash[cohort] << student[:name] 
   end 
-  puts sorted_hash.to_s.center(IO.console.winsize[1]) if !sorted_hash.empty?
+  if !sorted_hash.empty? and !sorted_hash[desired_cohort.to_sym].nil?
+    puts sorted_hash[desired_cohort.to_sym].join(', ').center(IO.console.winsize[1]) 
+  else
+    puts "No student in this cohort or not a recognised month input (must be in the format of: January, February etc)".center(IO.console.winsize[1])
+  end
 end
 
 # ----------- END OF CODE - BELOW WE CALL THE METHODS TO RUN THE PROGRAM -------------
