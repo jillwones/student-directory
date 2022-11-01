@@ -21,6 +21,7 @@ def print_menu
   puts "2. Show the students".yellow
   puts "3. Save the list to students.csv".cyan
   puts "4. Load the list from students.csv".magenta
+  puts "5. Search students".yellow
   puts "9. Exit".red
 end 
 
@@ -57,11 +58,37 @@ def process selection
           puts "File doesn't exist"
         end 
       end
+    when "5" then search_students_menu
     when "9" then exit
     else 
       puts "Invalid selection"
   end 
 end
+
+def search_students_menu 
+  loop do 
+    search_students
+    search_students_output(STDIN.gets.chomp)
+  end 
+end 
+
+def search_students
+  puts "Filter by:".green
+  puts "1. First letter".yellow
+  puts "2. Maximum name length".cyan
+  puts "3. Back to Main Menu".magenta
+end
+
+def search_students_output(choice)
+  case choice 
+  when "1" then search_by_first_letter
+  when "2" then search_by_name_length
+  when "3" then interactive_menu
+  else 
+    puts "Invalid input"
+  end 
+end 
+
 
 # -------------------------- SHOW STUDENTS SECTION ------------------------------
 
@@ -187,12 +214,18 @@ end
 
 # --------------------- METHODS MADE ANSWERING STEP 8 QUESTIONS ---------------------
 
-def print_students_if_first_letter_W  
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? 'W' }
+def search_by_first_letter  
+  puts "What letter do you want to search for?"
+  letter = STDIN.gets.chomp
+  @students.each_with_index do |student,i| 
+    puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].start_with? letter 
+  end
 end 
 
-def print_students_if_name_length_less_than_12  
-  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < 12 }
+def search_by_name_length  
+  puts "What is the maximum length of the name you wish to search for?"
+  length = STDIN.gets.chomp.to_i
+  @students.each_with_index { |student,i| puts "#{i + 1}. #{student[:name]} (#{student[:cohort]} cohort) (Height: #{student[:height]}m) (Hobbies: #{student[:hobbies].join(', ')})".center(IO.console.winsize[1]) if student[:name].length < length }
 end
 
 def print_students_by_cohorts  
