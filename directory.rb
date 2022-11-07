@@ -41,7 +41,7 @@ def process selection
         puts "What file would you like to save the data in? students.csv is recommended"
         filename = STDIN.gets.chomp
         filename = check_default(filename)
-        if File.exist?(filename) or filename.empty?
+        if File.exist?(filename)
           save_students(filename); puts "Data saved!".center(IO.console.winsize[1])
           break 
         else 
