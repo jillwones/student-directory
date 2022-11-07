@@ -40,7 +40,8 @@ def process selection
       loop do 
         puts "What file would you like to save the data in? students.csv is recommended"
         filename = STDIN.gets.chomp
-        if File.exist?(filename)
+        filename = check_default(filename)
+        if File.exist?(filename) or filename.empty?
           save_students(filename); puts "Data saved!".center(IO.console.winsize[1])
           break 
         else 
@@ -51,7 +52,8 @@ def process selection
       loop do 
         puts "What file do you wish to load student data from? students.csv is recommended"
         filename = STDIN.gets.chomp 
-        if File.exist?(filename)
+        filename = check_default(filename)
+        if File.exist?(filename) 
           load_students(filename); puts "Data loaded!".center(IO.console.winsize[1])
           break 
         else 
@@ -176,6 +178,10 @@ def input_students
 end 
 
 # -------------------- CODE RELATING TO SAVING AND LOADING DATA ---------------------
+
+def check_default(filename)
+  filename == '' ? 'students.csv' : filename 
+end
 
 def save_students(filename = "students.csv")
   # open the folder for writing
